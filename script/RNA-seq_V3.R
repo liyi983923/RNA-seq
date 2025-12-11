@@ -36,7 +36,7 @@ DPI         <- 350
 WIDTH_STD   <- 11
 HEIGHT_STD  <- 8
 
-# 颜色定义（发表级）
+# 颜色定义
 GROUP_COLORS <- c(
   "WT_Control"     = "#377eb8",   # 深蓝
   "KI_Control"     = "#1b9e77",   # 深绿
@@ -93,7 +93,7 @@ col_data <- tibble(sample = colnames(count_matrix)) %>%
   ) %>%
   column_to_rownames("sample")
 
-# ------------------- 3. 基因注释缓存（只查一次） -------------------
+# ------------------- 3. 基因注释缓存 -------------------
 cat("3/9 加载基因注释（一次性缓存）...\n")
 mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 all_genes <- rownames(count_matrix)
@@ -266,7 +266,7 @@ group_colors_pca <- c("WT_Control"="#377eb8","Model"="#d95f02",
                       "EV756_10mg"="#66a61e","Upada_10mg"="#7570b3",
                       "Cmpd261_5mg_B6"="#e6ab02")
 
-# 最终出图（所有图例参数都暴露给你调！）
+# 最终出图
 p_global_pca_tunable <- ggplot(pca_data, aes(PC1, PC2, color = group, shape = tissue)) +
   geom_point(size = 8, stroke = 0, alpha = 1) +
   scale_color_manual(values = group_colors_pca, name = "Treatment Group") +
@@ -276,11 +276,11 @@ p_global_pca_tunable <- ggplot(pca_data, aes(PC1, PC2, color = group, shape = ti
        x = paste0("PC1: ", percentVar[1], "% variance"),
        y = paste0("PC2: ", percentVar[2], "% variance")) +
   
-  # —————————————————————— 图例超级可调区（你随便改！）——————————————————————
+  # —————————————————————— 图例超级可调区——————————————————————
   theme_pubr(base_size = 22, base_family = "roboto") +
   theme(
     # 图例整体位置：right, left, top, bottom, none 或 c(0.8, 0.2) 坐标
-    legend.position = "right",           # 改这里换位置
+    legend.position = "right",           
     
     # 图例背景、边框、间距
     # legend.background = element_rect(fill = "white", color = "grey80", size = 0.5),
@@ -390,13 +390,13 @@ for (i in 1:nrow(reverse_contrasts)) {
 
 
 # ==============================================================================
-cat("8/9 正在生成3张终极发表级逆转热图（终极修复版）...\n")
+cat("8/9 正在生成3张终极发表级逆转热图...\n")
 
 options(bitmapType = "quartz")
 library(ComplexHeatmap)
 library(circlize)
 library(grid)
-# === 8.1. 收集逆转基因（不变）===
+# === 8.1. 收集逆转基因===
 rev_files <- list.files("results_final/Reversal_Analysis", pattern = "DEG_vs_Model.csv", 
                         recursive = TRUE, full.names = TRUE)
 
@@ -439,7 +439,7 @@ expr_raw <- assay(vsd_full)[reversal_genes$Geneid, ]
 rownames(expr_raw) <- gene_labels
 expr_z <- t(scale(t(expr_raw)))
 
-# === 8.4. 严格控制样本顺序（关键修复！）===
+# === 8.4. 严格控制样本顺序===
 desired_order <- c("WT_Control", "Model", "Upada_10mg", 
                    "Cmpd261_5mg", "Cmpd261_10mg", "EV756_10mg", "Cmpd261_5mg_B6")
 
@@ -472,7 +472,7 @@ ha <- HeatmapAnnotation(
   annotation_legend_param = list(title_gp = gpar(fontsize = 16, fontface = "bold"))
 )
 
-# === 8.6. 分组织画图（彻底修复索引问题）===
+# === 8.6. 分组织画图===
 # Skin 的完整代码====================
 tissue <- "Skin"
 
@@ -567,10 +567,10 @@ pdf("/Users/liyi/Downloads/RNA_Seq/X2_mouse/results_final/Reversal_Analysis/REVE
     height = pmax(14, n_genes * 0.08) + 8)
 
 draw(ht,
-     heatmap_legend_side = "right",      # 热图图例本来也会放右边，但我们现在不用它了
+     heatmap_legend_side = "right",      
      annotation_legend_side = "right",
-     annotation_legend_list = list(combined_legend),  # 只放这一个打包好的图例
-     padding = unit(c(5, 35, 5, 5), "mm")  # 右边多留点空间给两个图例
+     annotation_legend_list = list(combined_legend),  
+     padding = unit(c(5, 35, 5, 5), "mm")  
 )
 
 dev.off()
@@ -669,7 +669,7 @@ ht <- Heatmap(mat,
               name = "Z-score",
               col = col_fun,
               bottom_annotation = ha,
-              show_heatmap_legend = FALSE,        # 关闭自带颜色条
+              show_heatmap_legend = FALSE,       
               
               show_row_names = TRUE,
               row_names_side = "right",
@@ -711,7 +711,7 @@ pdf("/Users/liyi/Downloads/RNA_Seq/X2_mouse/results_final/Reversal_Analysis/REVE
 draw(ht,
      annotation_legend_list = list(combined_legend),
      annotation_legend_side = "right",
-     padding = unit(c(8, 70, 8, 8), "mm"))   # 右边 70mm 足够两个图例
+     padding = unit(c(8, 70, 8, 8), "mm"))  
 
 dev.off()
 
@@ -881,7 +881,7 @@ for (i in 1:nrow(reverse_contrasts)) {
 # ------------------- 9.2. UpSet 图（最现代的交集展示方式） -------------------
 
 
-cat("\n===== 开始终极核心逆转基因全套分析（已完整验证版）=====\n")
+cat("\n===== 开始终极核心逆转基因全套分析=====\n")
 library(tidyverse)
 library(ggupset)       # install.packages("ggupset")   版本 ≥0.4.0
 library(formatR)
@@ -933,7 +933,7 @@ core_reversal_genes <- names(freq_table[freq_table >= 2])
 cat(sprintf("\nTotal unique reversed genes : %d\n", length(all_reversed)))
 cat(sprintf("Core reversal genes (≥2 combinations) : %d\n", length(core_reversal_genes)))
 
-# ------------------- 9.2.3. 终极美 ggupset（2025最新写法，已验证）-------------------
+# ------------------- 9.2.3. 终极美 ggupset-------------------
 
 upset_ready <- tibble(
   Geneid = unlist(reversal_gene_list, use.names = FALSE),
@@ -979,5 +979,4 @@ ggsave("results_final/Core_Reversal_Genes/UpSet_Final_Publication.pdf",
 ggsave("results_final/Core_Reversal_Genes/UpSet_Final_Publication.png", 
        p_upset, width = 19, height = 10.5, dpi = 400, bg = "white")
 
-cat("零警告！终极发表级 UpSet 图已保存！\n")
 
